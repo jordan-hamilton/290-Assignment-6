@@ -1,0 +1,17 @@
+{{#if data}}
+  <h1>{{method}} Request Received</h1>
+  <table>
+    <thead>
+      <th>Key</th>
+      <th>Value</th>
+    </thead>
+    {{#each data}}
+      <tr>
+        <td>{{this.key}}</td>
+        <td>{{this.value}}</td>
+      </tr>
+    {{/each}}
+  </table>
+{{else}}
+  <h3>Please send either a GET or POST request to display its keys and values.</h3>
+{{/if}}
