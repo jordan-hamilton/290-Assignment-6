@@ -17,7 +17,60 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+// Set the public folder as a static directory
+app.use(express.static('public'));
+
 app.set('port', process.argv[2] || 3000);
+
+app.get('/', function(req, res, next) {
+  var context = {};
+  context.data = [];
+
+  mysql.pool.query('SELECT * FROM workouts', function(error, rows, fields) {
+    if (error) {
+      next(error);
+      return;
+    }
+
+    var content = rows;
+    console.log(content);
+    for (var item in content) {
+      context.data.push({
+        'id': content[item].id,
+        'name': content[item].name,
+        'reps': content[item].reps,
+        'weight': content[item].weight,
+        'date': content[item].date,
+        'lbs': content[item].lbs,
+      });
+    }
+    console.log(context);
+    res.render('index', context);
+  });
+});
+
+app.post('/', function(req, res, next) {
+  var context = {};
+
+  if (req.body.name) {
+    var workout = {
+      name: req.body.name,
+      reps: req.body.reps,
+      weight: req.body.weight,
+      date: req.body.date,
+      lbs: req.body.lbs
+    };
+    mysql.pool.query("INSERT INTO workouts SET ?", workout, function(error, results, fields) {
+      if (error) {
+        next(error);
+        return;
+      }
+      console.log(`Inserted id ${results.insertId}`); //DEBUG
+    });
+  } else {
+    console.log('Not enough info provided to process this workout');
+  }
+});
 
 app.get('/reset-table', function(req, res, next) {
   var context = {};
