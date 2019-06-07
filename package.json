@@ -1,0 +1,17 @@
+{
+  "name": "assignment-6",
+  "version": "1.0.0",
+  "description": "An exercise tracker",
+  "main": "index.js",
+  "repository": "git@github.com:jordan-hamilton/290-Assignment-6.git",
+  "author": "Jordan Hamilton <jordan-hamilton@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "mysql": "^2.17.1",
+    "request": "^2.88.0"
+  }
+}
