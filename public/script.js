@@ -1,17 +1,3 @@
-/*Because the interactions should be handled via Ajax, you often only want the
-database to send back an updated version of the table, not a whole new page.
-If you go back to the very first example with Express.js in week 7, you will see
-an example where we return plain text rather than HTML in a fancy Handlebars
-template. You can use this same technique to return a simple JSON string (which
-conveniently is what is shown being displayed in the MySQL demos). Just send
-that back to the browser in response to an Ajax request and build a table using
-it rather than generating the HTML on the server.
-
-You could even do this when you make the page initially.
-Just have JavaScript make an Ajax request when the page
-is loaded to get the JSON representing the table. You never
-even need to build a table on the server that way.*/
-
 document.addEventListener('DOMContentLoaded', function(event) {
   bindButtons();
 });
@@ -19,24 +5,27 @@ document.addEventListener('DOMContentLoaded', function(event) {
 function bindButtons() {
   var deleteButtons = document.getElementsByClassName('workoutDelete');
   for (var i = 0; i < deleteButtons.length; i++) {
-    bindDelete(deleteButtons[i], deleteButtons[i].parentNode.lastElementChild.value);
+    // Add an event listener to each delete button
+    bindDelete(deleteButtons[i]);
   }
 
   var updateButtons = document.getElementsByClassName('workoutUpdate');
   for (var i = 0; i < deleteButtons.length; i++) {
-    bindUpdate(updateButtons[i], updateButtons[i].parentNode.lastElementChild.value);
+    // Add an event listener to each update button
+    bindUpdate(updateButtons[i]);
   }
 
+  // Add an event listener for the new workout submission form
   bindAdd(document.getElementById('workoutSubmit'));
 }
 
-function bindDelete(button, workoutId) {
+function bindDelete(button) {
   button.addEventListener('click', function(event) {
     event.preventDefault();
     var request = new XMLHttpRequest();
     var payload = {
       delete: true,
-      id: workoutId
+      id: button.parentNode.lastElementChild.value // The form's hidden input value/workout ID
     };
     var row = button.parentNode.parentNode.parentNode;
     request.open('POST', '/', true);
@@ -59,15 +48,14 @@ function deleteRow(tableId, row) {
   table.deleteRow(row.rowIndex);
 }
 
-function bindUpdate(button, workoutId) {
+function bindUpdate(button) {
   button.addEventListener('click', function(event) {
     event.preventDefault();
     var request = new XMLHttpRequest();
     var payload = {
       update: true,
-      id: workoutId
+      id: button.parentNode.lastElementChild.value
     };
-    payload.id = workoutId;
     request.open('POST', '/', true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function() {
@@ -127,66 +115,31 @@ function addRow(tableId, content) {
 
   var dateCell = newRow.insertCell(3);
   dateCell.textContent = content.date;
-  console.log(typeof(content.date));
+
+  var formCell = newRow.insertCell(4)
+
+  var form = document.createElement('form');
+  var updateInput = document.createElement('input');
+  var deleteInput = document.createElement('input');
+
+  updateInput.setAttribute('type', 'submit');
+  updateInput.setAttribute('value', 'Update');
+  updateInput.setAttribute('class', 'workoutUpdate');
+
+  deleteInput.setAttribute('type', 'submit');
+  deleteInput.setAttribute('value', 'Delete');
+  deleteInput.setAttribute('class', 'workoutDelete');
+
+  var hiddenInput = document.createElement('input');
+  hiddenInput.setAttribute('type', 'hidden');
+  hiddenInput.setAttribute('value', content.id);
+
+  form.appendChild(updateInput);
+  form.appendChild(deleteInput);
+  form.appendChild(hiddenInput);
+  // Add event listeners to the new form submission buttons
+  bindUpdate(updateInput);
+  bindDelete(deleteInput);
+  // Add the form to the cell in our added row.
+  formCell.appendChild(form);
 }
-
-/*function logRow(event, tableID, currentRow) {
-  event.preventDefault();
-  try {
-    var table = document.getElementById(tableID);
-    var rowCount = table.rows.length;
-    console.log(currentRow);
-    for (var i = 0; i < rowCount; i++) {
-        var row = table.rows[i];
-
-        if (row == currentRow.parentNode.parentNode) {
-            if (rowCount <= 1) {
-                alert("Cannot delete all the rows.");
-                break;
-            }
-            table.deleteRow(i);
-            rowCount--;
-            i--;
-        }
-    }
-  } catch (e) {
-    alert(e);
-  }
-}*/
-
-
-/*document.getElementById('weatherSubmit').addEventListener('click', function(event) {
-  event.preventDefault();
-  var request = new XMLHttpRequest();
-  var location = document.getElementById('location').value;
-  request.open('GET', 'https://api.openweathermap.org/data/2.5/weather?q=' + location + ',us&units=imperial&appid=' + apiKey, true);
-  request.addEventListener('load', function() {
-    if (request.status >= 200 && request.status < 400) {
-      var response = JSON.parse(request.responseText);
-      document.getElementById('weatherData').textContent = 'Current Temperature: ' + response.main.temp + ' °F';
-      console.log(response);
-    } else {
-      console.log(`An error occurred: ${request.statusText}`)
-    }
-  });
-  request.send(null);
-});*/
-
-/*document.getElementById('postSubmit').addEventListener('click', function(event) {
-  event.preventDefault();
-  var request = new XMLHttpRequest();
-  var payload = {firstName:null};
-  payload.firstName = document.getElementById('firstName').value;
-  request.open('POST', 'https://httpbin.org/post', true);
-  request.setRequestHeader('Content-Type', 'application/json');
-  request.addEventListener('load', function() {
-    if (request.status >= 200 && request.status < 400) {
-      var response = JSON.parse(request.responseText);
-      document.getElementById('postData').textContent = 'Response: ' + response.data;
-      console.log(response);
-    } else {
-      console.log(`An error occurred: ${request.statusText}`)
-    }
-  });
-  request.send(JSON.stringify(payload));
-});*/
