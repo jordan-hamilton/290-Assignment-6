@@ -32,27 +32,75 @@ app.get('/', function(req, res, next) {
       return;
     }
 
-    var content = rows;
-    console.log(content);
-    for (var item in content) {
+    for (var item in rows) {
       context.data.push({
-        'id': content[item].id,
-        'name': content[item].name,
-        'reps': content[item].reps,
-        'weight': content[item].weight,
-        'date': content[item].date,
-        'lbs': content[item].lbs,
+        'id': rows[item].id,
+        'name': rows[item].name,
+        'reps': rows[item].reps,
+        'weight': rows[item].weight,
+        'date': rows[item].date,
+        'lbs': rows[item].lbs,
       });
     }
-    console.log(context);
     res.render('index', context);
   });
 });
 
 app.post('/', function(req, res, next) {
-  var context = {};
 
-  if (req.body.name) {
+  if (req.body.delete) {
+    handleDelete();
+  } else if (req.body.update) {
+    handleUpdate();
+  } else if (req.body.add) {
+    handleNew();
+  } else {
+    res.status(400);
+    res.send('Could not process this request');
+  }
+
+  function handleDelete() {
+    mysql.pool.query("DELETE FROM workouts WHERE id=?", req.body.id, function(error, results) {
+      if (error) {
+        next(error);
+        return;
+      }
+      res.status(200);
+      res.send('Workout deleted successfully');
+    });
+  }
+
+  function handleUpdate() {
+    var context = {};
+    mysql.pool.query("SELECT * FROM workouts WHERE id=?", req.body.id, function(error, results) {
+      if (error) {
+        next(error);
+        return;
+      }
+      if (results.length == 1) {
+        var workout = results[0];
+        mysql.pool.query("UPDATE workouts SET name=?, reps=?, weight=?, date=?, lbs=? WHERE id=?",
+          [req.body.name || workout.name,
+            req.body.reps || workout.reps,
+            req.body.weight || workout.weight,
+            req.body.date || workout.date,
+            req.body.lbs || workout.lbs,
+            req.body.id
+          ],
+          function(error, result) {
+            if (error) {
+              next(error);
+              return;
+            }
+            context.results = "Updated " + result.changedRows + " rows.";
+            res.render('index', context);
+          });
+      }
+    });
+  }
+
+  function handleNew() {
+    var context = {};
     var workout = {
       name: req.body.name,
       reps: req.body.reps,
@@ -60,15 +108,22 @@ app.post('/', function(req, res, next) {
       date: req.body.date,
       lbs: req.body.lbs
     };
-    mysql.pool.query("INSERT INTO workouts SET ?", workout, function(error, results, fields) {
+    mysql.pool.query("INSERT INTO workouts SET ?", workout, function(error, results) {
       if (error) {
         next(error);
         return;
       }
-      console.log(`Inserted id ${results.insertId}`); //DEBUG
+      mysql.pool.query("SELECT * FROM workouts WHERE id=?", results.insertId, function(error, results) {
+        if (error) {
+          next(error);
+          return;
+        }
+        if (results.length == 1) {
+          res.status(201);
+          res.send(results[0]);
+        }
+      });
     });
-  } else {
-    console.log('Not enough info provided to process this workout');
   }
 });
 
