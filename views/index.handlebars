@@ -1,5 +1,5 @@
 <h1>Workout Tracker</h1>
-<table id="workouts">
+<table id="workoutsTable">
   <thead>
     <th>Name</th>
     <th>Reps</th>
@@ -25,13 +25,16 @@
       {{/each}} </tbody>
   {{/if}}
 </table>
+<br />
 <form id="workoutForm">
   <label>Name
     <input type="text" name="name" id="name" placeholder="Bench press" required>
   </label>
+  <br />
   <label>Reps
     <input type="number" name="reps" id="reps" placeholder="12">
   </label>
+  <br />
   <label>Weight
     <input type="number" name="weight" id="weight" placeholder="150">
   </label>
@@ -41,8 +44,11 @@
       <option value="0">kg</option>
     </select>
   </label>
+  <br />
   <label>Date
     <input type="date" name="date" id="date">
   </label>
+  <br />
   <input type="submit" value="Add this workout" id="workoutSubmit">
 </form>
+<script src="./script.js"></script>
