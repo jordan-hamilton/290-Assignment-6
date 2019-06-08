@@ -87,13 +87,13 @@ app.post('/', function(req, res, next) {
             req.body.lbs || workout.lbs,
             req.body.id
           ],
-          function(error, result) {
+          function(error, results) {
             if (error) {
               next(error);
               return;
             }
-            context.results = "Updated " + result.changedRows + " rows.";
-            res.render('index', context);
+            res.status(200);
+            res.send('Workout updated successfully');
           });
       }
     });

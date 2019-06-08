@@ -53,13 +53,20 @@ function createUpdateForm(contents) {
   var reps = contents[1];
   var weight = contents[2].split(' ')[0];
   var units;
+
   if (contents[2].split(' ')[1] == 'lbs') {
     units = 1;
   } else {
     units = 0;
   }
+
   var date = contents[3];
-  console.log(date)
+  if (date == '0000-00-00') {
+    date = Date.now();
+  }
+  date = new Date(date).toISOString().split('T')[0];
+
+  var id = contents[4];
 
   var updateForm = document.createElement('form');
   updateForm.setAttribute('id', 'updateForm');
@@ -122,11 +129,23 @@ function createUpdateForm(contents) {
   dateInput.setAttribute('value', date);
   dateLabel.appendChild(dateInput);
 
+  var saveInput = document.createElement('input');
+  saveInput.setAttribute('type', 'submit');
+  saveInput.setAttribute('value', 'Save');
+  saveInput.setAttribute('class', 'workoutSave');
+
+  var hiddenInput = document.createElement('input');
+  hiddenInput.setAttribute('type', 'hidden');
+  hiddenInput.setAttribute('value', id);
+
   updateForm.appendChild(nameLabel);
   updateForm.appendChild(repsLabel);
   updateForm.appendChild(weightLabel);
   updateForm.appendChild(lbsLabel);
   updateForm.appendChild(dateLabel);
+  updateForm.appendChild(saveInput);
+  updateForm.appendChild(hiddenInput);
+  bindSave(saveInput);
 
   document.getElementById('workoutsTable').insertAdjacentElement('beforebegin', updateForm);
 
@@ -143,112 +162,122 @@ function createUpdateForm(contents) {
 
 function bindSave(button) {
   button.addEventListener('click', function(event) {
-      event.preventDefault();
-    });
-  }
-
-  function bindUpdate(button) {
-    button.addEventListener('click', function(event) {
-      event.preventDefault();
-      row = button.parentNode.parentNode.parentNode;
-      cells = row.getElementsByTagName('td');
-      var content = [];
-      for (var i = 0; i < cells.length - 1; i++) {
-        content.push(cells[i].textContent);
+    event.preventDefault();
+    var request = new XMLHttpRequest();
+    var updateForm = button.parentNode;
+    var payload = {
+      update: true,
+      name: updateForm.elements[0].value,
+      reps: updateForm.elements[1].value,
+      weight: updateForm.elements[2].value,
+      lbs: updateForm.elements[3].value,
+      date: updateForm.elements[4].value,
+      id: updateForm.elements[6].value
+    };
+    request.open('POST', '/', true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.addEventListener('load', function() {
+      if (request.status >= 200 && request.status < 400) {
+        console.log(request.responseText);
+        // DEBUG: toggle the table's disabled buttons, delete the form and update values
+      } else {
+        console.error(`An error occurred: ${request.statusText}`);
       }
-      createUpdateForm(content);
-      button.toggleAttribute('disabled');
-      button.nextElementSibling.toggleAttribute('disabled');
-      //TURN THE BELOW INTO THE SAVE BUTTON
-      var request = new XMLHttpRequest();
-      var payload = {
-        update: true,
-        id: button.parentNode.lastElementChild.value
-      };
-      request.open('POST', '/', true);
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.addEventListener('load', function() {
-        if (request.status >= 200 && request.status < 400) {
-          console.log(request.responseText);
-        } else {
-          console.error(`An error occurred: ${request.statusText}`);
-        }
-      });
-      request.send(JSON.stringify(payload));
     });
-  }
+    request.send(JSON.stringify(payload));
+  });
+}
 
-  function bindAdd(button) {
-    button.addEventListener('click', function(event) {
-      event.preventDefault();
-      var request = new XMLHttpRequest();
+function bindUpdate(button) {
+  button.addEventListener('click', function(event) {
+    event.preventDefault();
+    row = button.parentNode.parentNode.parentNode;
+    cells = row.getElementsByTagName('td');
+    var content = [];
+    for (var i = 0; i < cells.length - 1; i++) {
+      // Add the text values from the cell we're in into an array
+      content.push(cells[i].textContent);
+    }
+    // Get the ID of the hidden input and add it to the array
+    content.push(cells[cells.length - 1].lastElementChild.lastElementChild.value);
+    createUpdateForm(content);
+    // Disable updating or deleting this row until the update is saved
+    button.toggleAttribute('disabled');
+    button.nextElementSibling.toggleAttribute('disabled');
+  });
+}
 
-      var addForm = document.getElementById('workoutForm');
-      var payload = {
-        add: true,
-        name: addForm.elements[0].value,
-        reps: addForm.elements[1].value,
-        weight: addForm.elements[2].value,
-        lbs: addForm.elements[3].value,
-        date: addForm.elements[4].value
-      };
-      request.open('POST', '/', true);
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.addEventListener('load', function() {
-        if (request.status >= 200 && request.status < 400) {
-          console.log(request.responseText);
-          addRow('workoutsTable', JSON.parse(request.responseText));
-        } else {
-          console.error(`An error occurred: ${request.statusText}`);
-        }
-      });
-      request.send(JSON.stringify(payload));
+function bindAdd(button) {
+  button.addEventListener('click', function(event) {
+    event.preventDefault();
+    var request = new XMLHttpRequest();
+
+    var addForm = document.getElementById('workoutForm');
+    var payload = {
+      add: true,
+      name: addForm.elements[0].value,
+      reps: addForm.elements[1].value,
+      weight: addForm.elements[2].value,
+      lbs: addForm.elements[3].value,
+      date: addForm.elements[4].value
+    };
+    request.open('POST', '/', true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.addEventListener('load', function() {
+      if (request.status >= 200 && request.status < 400) {
+        console.log(request.responseText);
+        addRow('workoutsTable', JSON.parse(request.responseText));
+      } else {
+        console.error(`An error occurred: ${request.statusText}`);
+      }
     });
-  }
+    request.send(JSON.stringify(payload));
+  });
+}
 
-  function addRow(tableId, content) {
-    var table = document.getElementById(tableId);
-    var newRow = table.insertRow(-1);
+function addRow(tableId, content) {
+  var table = document.getElementById(tableId);
+  var newRow = table.insertRow(-1);
 
-    var nameCell = newRow.insertCell(0);
-    nameCell.textContent = content.name;
+  var nameCell = newRow.insertCell(0);
+  nameCell.textContent = content.name;
 
-    var repsCell = newRow.insertCell(1);
-    repsCell.textContent = content.reps;
+  var repsCell = newRow.insertCell(1);
+  repsCell.textContent = content.reps;
 
-    var weightCell = newRow.insertCell(2);
-    weightCell.textContent = content.weight;
-    if (content.lbs) {
-      weightCell.textContent += ' lbs';
-    } else weightCell.textContent += ' kg';
+  var weightCell = newRow.insertCell(2);
+  weightCell.textContent = content.weight;
+  if (content.lbs) {
+    weightCell.textContent += ' lbs';
+  } else weightCell.textContent += ' kg';
 
-    var dateCell = newRow.insertCell(3);
-    dateCell.textContent = content.date;
+  var dateCell = newRow.insertCell(3);
+  dateCell.textContent = content.date;
 
-    var formCell = newRow.insertCell(4)
+  var formCell = newRow.insertCell(4)
 
-    var form = document.createElement('form');
-    var updateInput = document.createElement('input');
-    var deleteInput = document.createElement('input');
+  var form = document.createElement('form');
+  var updateInput = document.createElement('input');
+  var deleteInput = document.createElement('input');
 
-    updateInput.setAttribute('type', 'submit');
-    updateInput.setAttribute('value', 'Update');
-    updateInput.setAttribute('class', 'workoutUpdate');
+  updateInput.setAttribute('type', 'submit');
+  updateInput.setAttribute('value', 'Update');
+  updateInput.setAttribute('class', 'workoutUpdate');
 
-    deleteInput.setAttribute('type', 'submit');
-    deleteInput.setAttribute('value', 'Delete');
-    deleteInput.setAttribute('class', 'workoutDelete');
+  deleteInput.setAttribute('type', 'submit');
+  deleteInput.setAttribute('value', 'Delete');
+  deleteInput.setAttribute('class', 'workoutDelete');
 
-    var hiddenInput = document.createElement('input');
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('value', content.id);
+  var hiddenInput = document.createElement('input');
+  hiddenInput.setAttribute('type', 'hidden');
+  hiddenInput.setAttribute('value', content.id);
 
-    form.appendChild(updateInput);
-    form.appendChild(deleteInput);
-    form.appendChild(hiddenInput);
-    // Add event listeners to the new form submission buttons
-    bindUpdate(updateInput);
-    bindDelete(deleteInput);
-    // Add the form to the cell in our added row.
-    formCell.appendChild(form);
-  }
+  form.appendChild(updateInput);
+  form.appendChild(deleteInput);
+  form.appendChild(hiddenInput);
+  // Add event listeners to the new form submission buttons
+  bindUpdate(updateInput);
+  bindDelete(deleteInput);
+  // Add the form to the cell in our added row.
+  formCell.appendChild(form);
+}
