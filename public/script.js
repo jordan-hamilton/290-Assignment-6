@@ -179,7 +179,6 @@ function bindSave(button) {
     request.addEventListener('load', function() {
       if (request.status >= 200 && request.status < 400) {
         console.log(request.responseText);
-        // DEBUG: toggle the table's disabled buttons, delete the form and update values
       } else {
         console.error(`An error occurred: ${request.statusText}`);
       }

@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 
-var mysql = require('./dbcon.js');
+var mysql = require('./dbCon.js');
 
 // Configure Handlebars
 var handlebars = require('express-handlebars').create({
