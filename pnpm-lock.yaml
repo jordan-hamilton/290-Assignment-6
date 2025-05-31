@@ -15,8 +15,8 @@ importers:
         specifier: ^4.17.1
         version: 4.21.2
       express-handlebars:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^5.3.1
+        version: 5.3.1
       forever:
         specifier: ^1.0.0
         version: 1.0.1
@@ -69,9 +69,6 @@ packages:
   array-unique@0.3.2:
     resolution: {integrity: sha512-SleRWjh9JUud2wH1hPs9rZBZ33H6T9HOiL0uwGnGx9FpE6wKGyfWugmbkEOIs6qWrZhg0LWeLziLrEwQJhs5mQ==}
     engines: {node: '>=0.10.0'}
-
-  asap@2.0.6:
-    resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
 
   asn1@0.2.6:
     resolution: {integrity: sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==}
@@ -370,9 +367,9 @@ packages:
     resolution: {integrity: sha512-AFASGfIlnIbkKPQwX1yHaDjFvh/1gyKJODme52V6IORh69uEYgZp0o9C+qsIGNVEiuuhQU0CSSl++Rlegg1qvA==}
     engines: {node: '>=0.10.0'}
 
-  express-handlebars@3.1.0:
-    resolution: {integrity: sha512-7QlaXnSREMmN5P2o4gmpUZDfJlLtfBka9d6r7/ccXaU7rPp76odw9YYtwZYdIiha2JqwiaG6o2Wu6NZJQ0u7Fg==}
-    engines: {node: '>=0.10'}
+  express-handlebars@5.3.1:
+    resolution: {integrity: sha512-mHpf3PAYysgo6M2yl/r0p5ui/gHwVa7vLBgA3ht8HlNxRGcwXSAGOwKAtAEVdHs4j7FDb5ZGsAJoA8nFaogbGw==}
+    engines: {node: '>=v10.24.1'}
 
   express@4.21.2:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
@@ -1011,9 +1008,6 @@ packages:
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  promise@8.3.0:
-    resolution: {integrity: sha512-rZPNPKTOYVNEEKFaq1HqTgOwZD+4/YHS5ukLzQCypkj+OkYx7iv0mA91lJlpPPZ8vMau3IIGj5Qlwrx+8iiSmg==}
-
   prompt@0.2.14:
     resolution: {integrity: sha512-jDK5yEbAakJmNm+260gZG1+PuzX3jT5Jy0VZAUGrrW9RQ1JEWEDEVNnhO70mL3+U5r6bSJo02xsE34wOS/LnrA==}
     engines: {node: '>= 0.6.6'}
@@ -1388,8 +1382,6 @@ snapshots:
 
   array-unique@0.3.2: {}
 
-  asap@2.0.6: {}
-
   asn1@0.2.6:
     dependencies:
       safer-buffer: 2.1.2
@@ -1735,13 +1727,11 @@ snapshots:
     dependencies:
       fill-range: 2.2.4
 
-  express-handlebars@3.1.0:
+  express-handlebars@5.3.1:
     dependencies:
       glob: 7.2.3
       graceful-fs: 4.2.11
       handlebars: 4.7.8
-      object.assign: 4.1.7
-      promise: 8.3.0
 
   express@4.21.2:
     dependencies:
@@ -2455,10 +2445,6 @@ snapshots:
       minimist: 1.2.8
 
   process-nextick-args@2.0.1: {}
-
-  promise@8.3.0:
-    dependencies:
-      asap: 2.0.6
 
   prompt@0.2.14:
     dependencies:
