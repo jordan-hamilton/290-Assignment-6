@@ -16,7 +16,7 @@ importers:
         version: 4.21.2
       express-handlebars:
         specifier: ^5.3.1
-        version: 5.3.1
+        version: 5.3.5
       forever:
         specifier: ^1.0.0
         version: 1.0.1
@@ -367,8 +367,8 @@ packages:
     resolution: {integrity: sha512-AFASGfIlnIbkKPQwX1yHaDjFvh/1gyKJODme52V6IORh69uEYgZp0o9C+qsIGNVEiuuhQU0CSSl++Rlegg1qvA==}
     engines: {node: '>=0.10.0'}
 
-  express-handlebars@5.3.1:
-    resolution: {integrity: sha512-mHpf3PAYysgo6M2yl/r0p5ui/gHwVa7vLBgA3ht8HlNxRGcwXSAGOwKAtAEVdHs4j7FDb5ZGsAJoA8nFaogbGw==}
+  express-handlebars@5.3.5:
+    resolution: {integrity: sha512-r9pzDc94ZNJ7FVvtsxLfPybmN0eFAUnR61oimNPRpD0D7nkLcezrkpZzoXS5TI75wYHRbflPLTU39B62pwB4DA==}
     engines: {node: '>=v10.24.1'}
 
   express@4.21.2:
@@ -1727,7 +1727,7 @@ snapshots:
     dependencies:
       fill-range: 2.2.4
 
-  express-handlebars@5.3.1:
+  express-handlebars@5.3.5:
     dependencies:
       glob: 7.2.3
       graceful-fs: 4.2.11
